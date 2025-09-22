@@ -1,12 +1,19 @@
-TOPLEVEL=adder
-MODULE=test_adder
-SIM=ghdl
-GHDL_ARGS= ../Srcs/rtl/adder.vhd
+# Choisir le simulateur
+SIM ?= ghdl
+TOPLEVEL_LANG ?= vhdl
 
-all:
-	python3 -m cocotb.simulator \
-	    --top-level adder \
-	    --python-modules . \
-	    --sim ghdl \
-	    --vcd \
-	    --ghdl-args="../Srcs/rtl/adder.vhd"
+# Indiquer les fichiers sources
+VHDL_SOURCES += $(PWD)/../Srcs/rtl_model/adder.vhd
+
+# Nom de l’entité top-level (ton DUT)
+COCOTB_TOPLEVEL = adder
+
+# Nom du fichier Python contenant le test (sans .py)
+COCOTB_TEST_MODULES = test_adder
+
+# (Optionnel) génération d’un fichier VCD pour les waves
+EXTRA_ARGS += --std=08
+SIM_ARGS += --wave=wave.ghw
+# Inclure les règles cocotb
+include $(shell cocotb-config --makefiles)/Makefile.sim
+ 

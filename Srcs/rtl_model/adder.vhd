@@ -4,17 +4,24 @@ use ieee.numeric_std.all;
 
 entity adder is
     port (
-        a : in  std_logic_vector(3 downto 0);
-        b : in  std_logic_vector(3 downto 0);
-        sum : out std_logic_vector(4 downto 0)
+        clk   : in  std_logic;
+        reset : in  std_logic;
+        a     : in  std_logic_vector(3 downto 0);
+        b     : in  std_logic_vector(3 downto 0);
+        sum   : out std_logic_vector(4 downto 0)
     );
 end entity adder;
 
 architecture rtl of adder is
 begin
-    process(a, b)
+    process(clk)
     begin
-        sum <= std_logic_vector(unsigned(a) + unsigned(b));
+        if rising_edge(clk) then
+            if reset = '1' then
+                sum <= (others => '0');
+            else
+                sum <= std_logic_vector(resize(unsigned(a), 5) + resize(unsigned(b), 5));
+            end if;
+        end if;
     end process;
 end architecture rtl;
-
