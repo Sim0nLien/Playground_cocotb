@@ -1,0 +1,20 @@
+{
+    "project": "Playground_cocotb",
+    "version": "1.0",
+    "author": "Lienard",
+    "settings": {
+        "simulation": true,
+        "timeout": 120
+    },
+    "modules": [
+        {
+            "name": "module1",
+            "enabled": true
+        },
+        {
+            "name": "module2",
+            "enabled": false
+        }
+    ]
+}
+
