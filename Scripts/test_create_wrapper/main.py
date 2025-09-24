@@ -37,7 +37,11 @@ def add_library(file_path, name_class, inputs, outputs):
         f.write(f'#include "includes/{name_class}.hpp"\n\n')
         for i in range(len(inputs)):
             f.write(f'#include "includes/{inputs[i][0]}.hpp"\n')
-
+        f.write("\n \n")
+        f.write("using namespace boost::multiprecision;\n")
+        f.write("template <int N>\n")
+        f.write(f"using uintN_t = boost::multiprecision::number<boost::multiprecision::cpp_int_backend<{type}, {type}, boost::multiprecision::unsigned_magnitude, boost::multiprecision::unchecked, void>>;\n")
+        f.write("\n\n")
 
 # TODO :  Même fonction, à rassembler en une seule plus tard
 
@@ -93,9 +97,59 @@ def create_tb(json_data, path, name_component, list_inputs):
         nb_input = get_json_argument(json_data, [f"{list_inputs[i][0]}", "nb_stimuli"])
         list_stimuli = get_stimuli(json_data, nb_input, list_inputs[i])
         write_stimulis(list_inputs[i][0], list_inputs[i][1], list_stimuli, "includes/")
-
+    return nb_input
         
+def create_main():
+    with open("main.cpp", "a") as f:
+        f.write("int main() {\n")
+    return
 
+def create_forloop(nb_stimuli, class_name, list_Qbits, list_outputs):
+    with open("main.cpp", "a") as f:
+        f.write(f"    int nb_stimuli = {nb_stimuli};\n")
+        for output in list_outputs:
+            f.write(f"    uint{output[1]}_t output_{output[0]};\n")
+        f.write(f"    {class_name[0].upper()}{class_name[1:]}<")
+        for i, Q in enumerate(list_Qbits):
+            f.write(f"{Q}")
+            if i < len(list_Qbits) - 1:
+                f.write(", ")
+        f.write(f"> component;\n")
+        f.write(f"    for (int i = 0; i < nb_stimuli; i++) {{\n")
+
+
+def write_process(input_data, output_data):
+    with open("main.cpp", "a") as f:
+        f.write("\n")
+        f.write("        // STEP ONE :")
+        f.write("\n")
+        f.write("        component.write(")
+        for i, input in enumerate(input_data):
+            f.write(f"{input[0]}_stimuli[i]")
+            if i < len(input_data) - 1:
+                f.write(", ")
+        f.write(");\n")
+        f.write("\n")
+        f.write("        // STEP TWO :")
+        f.write("\n")
+        f.write("        component.process();\n")
+        f.write("\n")
+        f.write("        // STEP THREE :")
+        f.write("\n")
+        f.write("        component.read(")
+        for i, input in enumerate(output_data):
+            f.write(f"output_{input[0]}")
+            if i < len(output_data) - 1:
+                f.write(", ")
+        f.write(");\n")
+        f.write("    }\n")
+        f.write("    return 0;\n")
+
+
+# def create_out-type(file_path, output_data):
+#     with open(file_path, "a") as f:
+#         for output in output_data:
+            
 
 
 
@@ -103,7 +157,6 @@ def create_tb(json_data, path, name_component, list_inputs):
 # print(get_json_argument(json_data, ["outputs", 1, "name"]))
 # print(get_json_argument(json_data, ["inputs", 2, "type"]))
 
-# TODO : ne pas oubler de créer les références dans le main pour les différents TB
 
 FILE_PATH = "main.cpp"
 JSON_PATH = "config.json"
@@ -119,7 +172,12 @@ if __name__ == "__main__":
     INPUT_DATA = get_list_inputs(JSON_DATA, NB_INPUTS)
     OUTPUT_DATA = get_list_outputs(JSON_DATA, NB_OUTPUTS)
     add_library(FILE_PATH, NAME_COMPONENT, INPUT_DATA, OUTPUT_DATA)
-    create_tb(JSON_DATA, PATH, NAME_COMPONENT, INPUT_DATA)
+    NB_STIMULI = create_tb(JSON_DATA, PATH, NAME_COMPONENT, INPUT_DATA)
+    create_main()
+    Q_LIST = [input[1] for input in INPUT_DATA] + [output[1] for output in OUTPUT_DATA]
+    create_forloop(NB_STIMULI, NAME_COMPONENT, Q_LIST, OUTPUT_DATA)
+    write_process(INPUT_DATA, OUTPUT_DATA)
+    print("Done.")
 
 
 
