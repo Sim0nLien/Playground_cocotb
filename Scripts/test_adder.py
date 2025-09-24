@@ -1,6 +1,11 @@
 import cocotb
 from cocotb.triggers import RisingEdge, Timer
 from cocotb.clock import Clock
+import subprocess
+import json
+import subprocess
+
+# TODO : faire attention ou l'on se trouve
 
 
 @cocotb.test()
@@ -30,3 +35,29 @@ async def test_adder(dut):
         cocotb.log.info(f"Tested {a_val} + {b_val}, got {dut.sum.value}")
     
     print("All tests passed!")
+
+
+
+    proc = subprocess.run(
+        ["make"],                     # commande seule
+        cwd="../build",               # change de dossier
+        capture_output=True,
+        text=True,
+        check=False
+    )
+
+    print("Code de retour :", proc.returncode)
+    print("stdout:\n", proc.stdout)
+    print("stderr:\n", proc.stderr)
+
+    proc = subprocess.run(
+        ["./exe"],                     # commande seule
+        cwd="../build",               # change de dossier
+        capture_output=True,
+        text=True,
+        check=False
+    )
+
+    print("Code de retour :", proc.returncode)
+    print("stdout:\n", proc.stdout)
+    print("stderr:\n", proc.stderr)

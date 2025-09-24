@@ -25,24 +25,23 @@ def get_json_argument(json_data, key_path):
 
 
 def create_page(file_path):
-    with open(file_path, "w") as f:
-        f.write("#created by script\n")
+    global PATH
+    with open(PATH + "main.cpp", "w") as f:
+        f.write("//created by script\n")
         f.write("\n")
 
 
 def add_library(file_path, name_class, inputs, outputs):
-    with open(file_path, "a") as f:
+    global PATH
+    with open(PATH + "main.cpp", "a") as f:
         f.write("#include <iostream>\n")
         f.write("#include <boost/multiprecision/cpp_int.hpp>\n")
+        f.write('#include "includes/type.hpp"\n')
         f.write(f'#include "includes/{name_class}.hpp"\n\n')
         for i in range(len(inputs)):
             f.write(f'#include "includes/{inputs[i][0]}.hpp"\n')
-        f.write("\n \n")
-        f.write("using namespace boost::multiprecision;\n")
-        f.write("template <int N>\n")
-        f.write(f"using uintN_t = boost::multiprecision::number<boost::multiprecision::cpp_int_backend<{type}, {type}, boost::multiprecision::unsigned_magnitude, boost::multiprecision::unchecked, void>>;\n")
         f.write("\n\n")
-
+        
 # TODO :  Même fonction, à rassembler en une seule plus tard
 
 def get_list_inputs(json_data, number_inputs):
@@ -62,19 +61,19 @@ def get_list_outputs(json_data, number_outputs):
     return list_outputs
 
 def write_stimulis(name, type, stimuli, path = "includes/"):
-    file_path = path + name + ".hpp"
+    global PATH
+    file_path = PATH + "includes/" + name + ".hpp"
     with open(file_path, "w") as f:
         f.write("// Created by script\n \n")
         f.write(f"#ifndef {name.upper()}_HPP\n")
         print(f"{name.upper()}_Stimuli created...")
         f.write(f"#define {name.upper()}_HPP\n \n")
         f.write("#include <iostream>\n")
+        f.write("#include <bitset>\n")
         f.write("#include <boost/multiprecision/cpp_int.hpp>\n \n")
-        f.write("using namespace boost::multiprecision;\n")
-        f.write("template <int N>\n")
-        f.write(f"using uint{type}_t = boost::multiprecision::number<boost::multiprecision::cpp_int_backend<{type}, {type}, boost::multiprecision::unsigned_magnitude, boost::multiprecision::unchecked, void>>;\n")
+        f.write('#include "type.hpp"\n')
         f.write("\n\n")
-        f.write(f"static const uint{type}_t {name}_stimuli[] = {{\n")
+        f.write(f"static const uintN_t<{type}> {name}_stimuli[] = {{\n")
         for i in range(len(stimuli)):
             f.write(f"    {stimuli[i]},\n")
         f.write("};\n\n")
@@ -100,15 +99,18 @@ def create_tb(json_data, path, name_component, list_inputs):
     return nb_input
         
 def create_main():
-    with open("main.cpp", "a") as f:
+    global PATH
+    print(PATH + "main.cpp")
+    with open(PATH + "main.cpp", "a") as f:
         f.write("int main() {\n")
     return
 
 def create_forloop(nb_stimuli, class_name, list_Qbits, list_outputs):
-    with open("main.cpp", "a") as f:
+    global PATH
+    with open(PATH + "main.cpp", "a") as f:
         f.write(f"    int nb_stimuli = {nb_stimuli};\n")
         for output in list_outputs:
-            f.write(f"    uint{output[1]}_t output_{output[0]};\n")
+            f.write(f"    uintN_t<{output[1]}> output_{output[0]};\n")
         f.write(f"    {class_name[0].upper()}{class_name[1:]}<")
         for i, Q in enumerate(list_Qbits):
             f.write(f"{Q}")
@@ -119,31 +121,28 @@ def create_forloop(nb_stimuli, class_name, list_Qbits, list_outputs):
 
 
 def write_process(input_data, output_data):
-    with open("main.cpp", "a") as f:
-        f.write("\n")
-        f.write("        // STEP ONE :")
-        f.write("\n")
+    global PATH
+    with open(PATH + "main.cpp", "a") as f:
+
         f.write("        component.write(")
         for i, input in enumerate(input_data):
             f.write(f"{input[0]}_stimuli[i]")
             if i < len(input_data) - 1:
                 f.write(", ")
         f.write(");\n")
-        f.write("\n")
-        f.write("        // STEP TWO :")
-        f.write("\n")
         f.write("        component.process();\n")
-        f.write("\n")
-        f.write("        // STEP THREE :")
-        f.write("\n")
         f.write("        component.read(")
         for i, input in enumerate(output_data):
             f.write(f"output_{input[0]}")
             if i < len(output_data) - 1:
                 f.write(", ")
         f.write(");\n")
+        for i, output in enumerate(output_data):
+            f.write(f"        std::cout << std::bitset<32>(static_cast<unsigned long>(output_{output[0]})) << std::endl;\n")
+        f.write(";\n")
         f.write("    }\n")
         f.write("    return 0;\n")
+        f.write("}\n")
 
 
 # def create_out-type(file_path, output_data):
@@ -160,7 +159,7 @@ def write_process(input_data, output_data):
 
 FILE_PATH = "main.cpp"
 JSON_PATH = "config.json"
-PATH = ""
+PATH = "../../Srcs/cpp_model/"
 
 if __name__ == "__main__":
     with open(JSON_PATH, "r") as f:

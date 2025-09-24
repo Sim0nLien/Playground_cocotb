@@ -9,6 +9,7 @@ find_package(Boost REQUIRED)
 include_directories(include ${Boost_INCLUDE_DIRS})
 set(SOURCES
     Srcs/cpp_model/main.cpp
+    Srcs/cpp_model/includes/adder.hpp
 )
 
 add_executable(exe ${SOURCES})
