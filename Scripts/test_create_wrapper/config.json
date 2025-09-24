@@ -1,20 +1,28 @@
 {
-    "project": "Playground_cocotb",
-    "version": "1.0",
-    "author": "Lienard",
-    "settings": {
-        "simulation": true,
-        "timeout": 120
+    "name" : "adder",
+    "inputs" :
+    [
+        {"number" : 2},
+        {"name" : "a", "Qbits" : 32},
+        {"name" : "b", "Qbits" : 32}
+    ],
+
+    "a" : {
+        "nb_stimuli" : 4,
+        "stimuli" : [1, 2, 3, 4]
     },
-    "modules": [
-        {
-            "name": "module1",
-            "enabled": true
-        },
-        {
-            "name": "module2",
-            "enabled": false
-        }
+    
+    "b" : {
+        "nb_stimuli" : 4,
+        "stimuli" : [10, 20, 30, 40]
+    },
+
+    "outputs" :
+    [
+        {"number" : 1},
+        {"name" : "sum", "Qbits" : 32}
     ]
+
+
 }
 
