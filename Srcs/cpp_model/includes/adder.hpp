@@ -1,29 +1,39 @@
+#ifndef ADDER_HPP
+#define ADDER_HPP
+
 #include <iostream>
 #include <boost/multiprecision/cpp_int.hpp>
+#include "type.hpp"
 
-template <int N>
-using uintN_t = boost::multiprecision::number<boost::multiprecision::cpp_int_backend<N, N, boost::multiprecision::unsigned_magnitude, boost::multiprecision::unchecked, void>>;
-
-template <int N>
+template <int a_bits, int b_bits, int sum_bits>
 class Adder {
 
     public:
 
-    Adder() : (0) {}
+    Adder() : sum(0) {}
 
     void reset() {
         sum = 0;
     }
 
-    void tick(uintN_t<N> a , uintN_t<N> b) {
-        sum = a + b; 
+    void write(uintN_t<a_bits> a , uintN_t<b_bits> b) {
+        a_mem = a;
+        b_mem = b;
     }
 
-    uintN_t<N> get_sum() const {
-        return sum;
+    void process() {
+        sum = a_mem + b_mem;
+    }
+
+    void read(uintN_t<sum_bits> &output_sum){
+        output_sum = sum;
     }
 
     private:
-    uintN_t<N> sum;
+    uintN_t<a_bits> a_mem;
+    uintN_t<b_bits> b_mem;
+    uintN_t<sum_bits> sum;
 
 };
+
+#endif // ADDER_HPP

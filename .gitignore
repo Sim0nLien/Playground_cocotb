@@ -6,3 +6,9 @@ build/
 *.pyc
 *.cf
 schéma.*
+*.txt
+Results/
+*.vcd
+sim_build/
+
+

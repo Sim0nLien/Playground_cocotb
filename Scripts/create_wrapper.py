@@ -158,8 +158,8 @@ def write_process(input_data, output_data):
 
 
 FILE_PATH = "main.cpp"
-JSON_PATH = "config.json"
-PATH = "../../Srcs/cpp_model/"
+JSON_PATH = "module.json"
+PATH = "../Srcs/cpp_model/"
 
 if __name__ == "__main__":
     with open(JSON_PATH, "r") as f:

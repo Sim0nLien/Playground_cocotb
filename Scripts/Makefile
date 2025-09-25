@@ -9,11 +9,19 @@ VHDL_SOURCES += $(PWD)/../Srcs/rtl_model/adder.vhd
 COCOTB_TOPLEVEL = adder
 
 # Nom du fichier Python contenant le test (sans .py)
-COCOTB_TEST_MODULES = test_adder
+COCOTB_TEST_MODULES = test_adder_vhd
 
 # (Optionnel) génération d’un fichier VCD pour les waves
 EXTRA_ARGS += --std=08
-SIM_ARGS += --wave=wave.ghw
+SIM_ARGS += --wave=wave.ghw 
 # Inclure les règles cocotb
 include $(shell cocotb-config --makefiles)/Makefile.sim
- 
+
+all: run_sim
+
+run_sim:
+	python3 create_wrapper.py
+	python3 test_adder_cpp.py
+	python3 verif_result.py
+
+
