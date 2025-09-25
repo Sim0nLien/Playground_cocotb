@@ -1,15 +1,41 @@
 # Playground_cocotb
-Learning and experimenting with cocotb for FPGA design validation.
 
-## Current Status
+Learning and experimenting with **cocotb** for FPGA design validation.  
+This project aims to build a verification framework comparing **C++ models** and **VHDL implementations**.
 
-I am currently developing a Python script that generates a C++ wrapper for a given VHDL component.  
-The script reads the component's input and output definitions from a JSON file and produces the necessary C++ code to interface with the component.
+---
 
-## Next Steps
+## 📂 Project Structure
 
-- Use a script to compare the output of the VHDL component with the output of the C++ simulation to ensure consistency.  
-- Create a deployable tool to automate the entire process: generating the C++ wrapper, running simulations, and comparing the results.  
-- Finalize the README to document the project and its usage.  
-- Complete the `requirements.txt` file with all necessary dependencies.  
-- Package everything into a Docker container for easy deployment and usage.
+- `Scripts/` : Python scripts to run cocotb tests and generate files for simulation and verification.  
+- `Srcs/` : Source files for the FPGA design, including VHDL and C++ models.  
+  - `cpp_model/` : Reference models written in C++.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Install Dependencies
+Make sure you have **Python**, **cocotb**, and a VHDL simulator (e.g., **GHDL**) installed.  
+Then install the required Python packages:
+
+### 2. Add Your Design
+
+Place your VHDL design files in the Srcs/rtl_model/ directory.
+Place your C++ models in Srcs/cpp_model/.
+
+### 3. Create Testbenches
+
+Write your cocotb testbenches [this file](/Scripts/test_adder_vhd.py) in the Scripts/ directory.
+
+### 4. Configure the Module
+
+Define your module configuration and test stimuli in [module](Scripts/module.json).
+
+### 5. Run Tests
+
+Run : 
+
+```bash
+make
+```
